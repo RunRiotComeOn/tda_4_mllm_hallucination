@@ -150,7 +150,10 @@ def collate_fn(batch):
     keys = batch[0].keys()
     return {k: torch.stack([b[k] for b in batch]) for k in keys}
 
-loader = DataLoader(train_dataset, batch_size=2, shuffle=True,
+BATCH_SIZE = 16 if torch.cuda.is_available() and torch.cuda.get_device_properties(0).total_mem > 20e9 else 2
+print(f"Using batch size: {BATCH_SIZE}")
+
+loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True,
                     collate_fn=collate_fn, num_workers=0)
 
 # ──────────────────────────────────────────
@@ -497,7 +500,7 @@ clean_train_raw = train_raw_dataset.select(clean_indices)
 clean_raw_labels = [train_raw_labels[i] for i in clean_indices]
 clean_train_ds = LazyCocoDataset(clean_train_raw, clean_raw_labels)
 
-clean_loader = DataLoader(clean_train_ds, batch_size=2, shuffle=True,
+clean_loader = DataLoader(clean_train_ds, batch_size=BATCH_SIZE, shuffle=True,
                           collate_fn=collate_fn, num_workers=0)
 
 # Reload a fresh BLIP + LoRA (reset all weights)
