@@ -41,8 +41,8 @@ Set DEBUG_TRAIN_SIZE / DEBUG_EVAL_SIZE env vars for small-subset runs.
 """
 
 import torch
-from transformers import Qwen3VLForConditionalGeneration, Qwen3VLProcessor
-from peft import LoraConfig, get_peft_model
+from transformers import Qwen3VLForConditionalGeneration, Qwen3VLProcessor, BitsAndBytesConfig
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from datasets import load_dataset
 from qwen_vl_utils import process_vision_info
 from tqdm import tqdm
@@ -73,14 +73,24 @@ model_name = "Qwen/Qwen3-VL-2B-Instruct"
 processor = Qwen3VLProcessor.from_pretrained(model_name)
 processor.tokenizer.padding_side = "left"
 
+# 4-bit quantization config (QLoRA)
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16,
+    bnb_4bit_use_double_quant=True,
+    llm_int8_skip_modules=["merger", "lm_head"],
+)
+
 model = Qwen3VLForConditionalGeneration.from_pretrained(
     model_name,
+    quantization_config=bnb_config,
     torch_dtype=torch.bfloat16,
     attn_implementation="sdpa",
-).to(device)
+    device_map="auto",
+)
 
-for param in model.parameters():
-    param.requires_grad = False
+model = prepare_model_for_kbit_training(model)
 
 # LoRA on LM decoder self-attention (same as original TracIn version)
 lora_config = LoraConfig(
@@ -98,11 +108,34 @@ model.print_trainable_parameters()
 # The merger is small (~few Linear + LayerNorm layers) and is the bridge
 # between the vision encoder and the LM decoder.  We need its gradients
 # for TRAK-CA attribution.
+#
+# Under 4-bit quantization some merger Linear layers become Params4bit
+# (integer dtype, cannot require grad).  We dequantize them back to
+# bfloat16 so they can participate in gradient computation.
+import bitsandbytes as bnb
+
 merger_unfrozen = 0
-for name, param in model.named_parameters():
-    if "merger" in name:
-        param.requires_grad = True
-        merger_unfrozen += 1
+for name, module in model.named_modules():
+    if "merger" not in name:
+        continue
+    for pname, param in module.named_parameters(recurse=False):
+        if param.dtype in (torch.float16, torch.bfloat16, torch.float32):
+            param.requires_grad = True
+            merger_unfrozen += 1
+        elif isinstance(param, bnb.nn.Params4bit):
+            # Dequantize: replace the 4-bit param with a full-precision copy
+            deq = param.dequantize().to(torch.bfloat16).detach().requires_grad_(True)
+            full_name = f"{pname}"
+            module._parameters[full_name] = torch.nn.Parameter(deq)
+            merger_unfrozen += 1
+        else:
+            # Other non-float params (e.g. int8) — try casting
+            try:
+                fp = param.data.to(torch.bfloat16).detach().requires_grad_(True)
+                module._parameters[pname] = torch.nn.Parameter(fp)
+                merger_unfrozen += 1
+            except Exception:
+                print(f"  WARNING: Could not unfreeze {name}.{pname} (dtype={param.dtype})")
 
 model.gradient_checkpointing_enable()
 
@@ -268,7 +301,7 @@ def prepare_batch(images, label_texts):
 # ──────────────────────────────────────────
 
 NUM_EPOCHS = 2
-BATCH_SIZE = 16
+BATCH_SIZE = 2
 
 model.train()
 optimizer = torch.optim.AdamW(
@@ -710,16 +743,29 @@ torch.cuda.empty_cache()
 
 model = Qwen3VLForConditionalGeneration.from_pretrained(
     model_name,
+    quantization_config=bnb_config,
     torch_dtype=torch.bfloat16,
     attn_implementation="sdpa",
-).to(device)
-for param in model.parameters():
-    param.requires_grad = False
+    device_map="auto",
+)
+model = prepare_model_for_kbit_training(model)
 model = get_peft_model(model, lora_config)
-# Re-unfreeze merger
-for name, param in model.named_parameters():
-    if "merger" in name:
-        param.requires_grad = True
+# Re-unfreeze merger (dequantize 4-bit params if needed)
+for name, module in model.named_modules():
+    if "merger" not in name:
+        continue
+    for pname, param in module.named_parameters(recurse=False):
+        if param.dtype in (torch.float16, torch.bfloat16, torch.float32):
+            param.requires_grad = True
+        elif isinstance(param, bnb.nn.Params4bit):
+            deq = param.dequantize().to(torch.bfloat16).detach().requires_grad_(True)
+            module._parameters[pname] = torch.nn.Parameter(deq)
+        else:
+            try:
+                fp = param.data.to(torch.bfloat16).detach().requires_grad_(True)
+                module._parameters[pname] = torch.nn.Parameter(fp)
+            except Exception:
+                pass
 model.gradient_checkpointing_enable()
 
 model.train()

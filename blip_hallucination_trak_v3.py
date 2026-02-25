@@ -56,7 +56,7 @@ import re
 # 0.  Environment setup
 # ──────────────────────────────────────────
 
-OUTPUT_DIR = "results_blip_trak_ca_v3"
+OUTPUT_DIR = "results_blip_trak_ca_v3_0.05"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -298,7 +298,7 @@ for case_item in hallucination_cases:
 TRAK_PROJ_DIM = 2048
 TRAK_LAMBDA = 1e-3
 TOP_K_PER_CASE = 50   # report top-k per case (full ranking is computed)
-REMOVE_FRACTION = 0.1  # remove top 5% most harmful training samples
+REMOVE_FRACTION = 0.05  # remove top 5% most harmful training samples
 
 
 def hallucination_loss(eval_index: int, hallucinated_tokens: set):
