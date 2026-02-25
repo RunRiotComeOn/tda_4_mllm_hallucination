@@ -1,0 +1,495 @@
+trainable params: 589,824 || all params: 248,034,424 || trainable%: 0.2378
+Train set: 117266 samples
+Eval set:  4952 samples
+Category names (80): ['person', 'bicycle', 'car', 'motorcycle', 'airplane'] ...
+Extracting train labels ...
+Extracting eval labels ...
+Train dataset: 117266, Eval dataset: 4952
+Using batch size: 16
+
+=== Epoch 1/2 ===
+  avg loss = 7.5925
+
+=== Epoch 2/2 ===
+  avg loss = 7.5242
+
+LoRA fine-tuning done.
+LoRA checkpoint saved to results/lora_before_cleaning
+
+Scanning 4952 eval samples for hallucinations ...
+Hallucination cases found: 450 / 4952
+
+Saving 450 hallucination eval images to results/ ...
+
+Unique hallucinated objects across all cases: 54
+Unique training samples to compute gradients for: 16105
+
+Pre-computing training gradients (one-time) ...
+Cached 16105 training gradients (~19.0 GB)
+
+Computing TracIn for 450 hallucination cases ...
+  [1/450] eval #3  halluc={'bench'}  filtered=500
+  [100/450] eval #939  halluc={'bottle'}  filtered=500
+  [200/450] eval #2103  halluc={'bowl'}  filtered=500
+  [300/450] eval #3286  halluc={'kite'}  filtered=500
+  [400/450] eval #4493  halluc={'cup'}  filtered=500
+
+============================================================
+HARMFUL TRAINING SAMPLES (positive influence): 6192 / 117266
+============================================================
+  #1  train_idx=4593  agg_influence=2246.3097  objects: bottle; cake; cell phone; chair; couch; cup; dining table; person; refrigerator; remote; sink; vase
+  #2  train_idx=2574  agg_influence=1921.8402  objects: bowl; broccoli; carrot; cup; dining table; fork; knife
+  #3  train_idx=6570  agg_influence=1881.7093  objects: bear; person
+  #4  train_idx=12370  agg_influence=1875.2235  objects: bear
+  #5  train_idx=15341  agg_influence=1397.0002  objects: car; teddy bear
+  #6  train_idx=12071  agg_influence=1087.3540  objects: teddy bear
+  #7  train_idx=8209  agg_influence=1047.4696  objects: book; teddy bear
+  #8  train_idx=18600  agg_influence=1031.1299  objects: book; teddy bear
+  #9  train_idx=7131  agg_influence=977.4547  objects: teddy bear
+  #10  train_idx=11838  agg_influence=975.8341  objects: teddy bear
+  #11  train_idx=1816  agg_influence=846.0037  objects: book; bowl; cake; cup; teddy bear
+  #12  train_idx=25047  agg_influence=840.8806  objects: broccoli
+  #13  train_idx=3461  agg_influence=814.8806  objects: bird; bus; car
+  #14  train_idx=16816  agg_influence=810.6213  objects: teddy bear
+  #15  train_idx=1054  agg_influence=809.3579  objects: bottle; chair; cup; dining table; orange; person; refrigerator; tv
+
+Saving top-10 harmful training sample images to results/ ...
+First-round summary written to results/summary.txt
+
+Cleaned training set: 111074 / 117266 (removed 6192)
+
+============================================================
+RETRAINING on cleaned dataset ...
+============================================================
+
+=== Epoch 1/2 ===
+  avg loss = 7.5987
+
+=== Epoch 2/2 ===
+  avg loss = 7.5290
+
+Retraining done.
+LoRA checkpoint saved to results/lora_after_cleaning
+
+Re-scanning 4952 eval samples for hallucinations ...
+
+============================================================
+BEFORE vs AFTER DATA CLEANING
+============================================================
+  Training samples    : 117266 -> 111074 (removed 6192)
+  Hallucination cases : 450 -> 407
+  Hallucination rate  : 9.1% -> 8.2%
+  Reduction           : 9.6%
+============================================================
+
+Remaining hallucination cases:
+  eval #3: generated='bench' halluc={'bench'}
+  eval #4: generated='couchssee teddy bear' halluc={'bear'}
+  eval #13: generated='bowlssee dining table' halluc={'dining table'}
+  eval #52: generated='person' halluc={'person'}
+  eval #55: generated='bowlssee carrot' halluc={'carrot'}
+  eval #57: generated='apple' halluc={'apple'}
+  eval #85: generated='bowlssee dining table' halluc={'dining table'}
+  eval #103: generated='bowl' halluc={'bowl'}
+  eval #113: generated='bus' halluc={'bus'}
+  eval #119: generated='handbag' halluc={'handbag'}
+  eval #132: generated='chairdilly cupdilly dining tabledilly laptopssee mouse' halluc={'mouse'}
+  eval #150: generated='car' halluc={'car'}
+  eval #161: generated='bookdilly bottledilly cup' halluc={'cup'}
+  eval #173: generated='benchdilly clock' halluc={'clock'}
+  eval #176: generated='bottlessee chairssee dining tablessee knife' halluc={'knife'}
+  eval #206: generated='dining table' halluc={'dining table'}
+  eval #222: generated='backpack' halluc={'backpack'}
+  eval #239: generated='bird' halluc={'bird'}
+  eval #250: generated='bookssee chairssee chairssee chairssee cupssee dining tablessee knife' halluc={'knife'}
+  eval #251: generated='bowlssee carrot' halluc={'carrot'}
+  eval #253: generated='cell phonedilly laptopssee mouse' halluc={'mouse'}
+  eval #275: generated='hot dog' halluc={'dog'}
+  eval #318: generated='car' halluc={'car'}
+  eval #322: generated='bottlessee hot dog' halluc={'dog', 'hot dog'}
+  eval #331: generated='bowl' halluc={'bowl'}
+  eval #332: generated='teddy bear' halluc={'bear'}
+  eval #380: generated='person' halluc={'person'}
+  eval #399: generated='bowl' halluc={'bowl'}
+  eval #434: generated='bicycle pastures car pastures person' halluc={'car'}
+  eval #440: generated='teddy bear' halluc={'bear'}
+  eval #442: generated='bottlessee bowlssee dining tablessee knife' halluc={'knife'}
+  eval #444: generated='teddy bear' halluc={'bear'}
+  eval #450: generated='bookssee potted plant' halluc={'potted plant'}
+  eval #456: generated='fire hydrant' halluc={'fire hydrant'}
+  eval #469: generated='car' halluc={'car'}
+  eval #472: generated='cat' halluc={'cat'}
+  eval #492: generated='laptop' halluc={'laptop'}
+  eval #499: generated='book' halluc={'book'}
+  eval #528: generated='cat' halluc={'cat'}
+  eval #553: generated='bottledilly cupssee keyboarddilly laptopssee mouse' halluc={'mouse'}
+  eval #577: generated='bananassee dining table' halluc={'dining table'}
+  eval #580: generated='bowl' halluc={'bowl'}
+  eval #601: generated='cardilly person' halluc={'person'}
+  eval #604: generated='appledilly bananadilly cardilly handbag' halluc={'handbag'}
+  eval #622: generated='teddy bear' halluc={'bear'}
+  eval #637: generated='dining table' halluc={'dining table'}
+  eval #642: generated='bench' halluc={'bench'}
+  eval #676: generated='teddy bear' halluc={'bear'}
+  eval #681: generated='teddy bear' halluc={'bear'}
+  eval #687: generated='chair backpack backpackssee chair' halluc={'backpack'}
+  eval #690: generated='cakedilly cup' halluc={'cup'}
+  eval #694: generated='benchdilly teddy bear' halluc={'bear'}
+  eval #706: generated='hot dog' halluc={'dog'}
+  eval #731: generated='boat' halluc={'boat'}
+  eval #742: generated='chair' halluc={'chair'}
+  eval #750: generated='car' halluc={'car'}
+  eval #781: generated='bowlssee hot dog' halluc={'dog'}
+  eval #784: generated='chairssee personssee teddy bear' halluc={'bear'}
+  eval #790: generated='cakessee dining table luxury cake' halluc={'dining table'}
+  eval #793: generated='carssee sandwich' halluc={'sandwich'}
+  eval #798: generated='teddy bear' halluc={'bear'}
+  eval #806: generated='car' halluc={'car'}
+  eval #809: generated='potted plant' halluc={'potted plant'}
+  eval #813: generated='bookssee vase' halluc={'vase'}
+  eval #826: generated='bench tuscany chair tuscany chair tuscany dining table tuscany handbag tuscany person' halluc={'chair', 'handbag', 'dining table'}
+  eval #856: generated='bed' halluc={'bed'}
+  eval #859: generated='bird' halluc={'bird'}
+  eval #860: generated='car' halluc={'car'}
+  eval #864: generated='sink' halluc={'sink'}
+  eval #882: generated='bottle luxury toilet' halluc={'bottle'}
+  eval #892: generated='applessee dining tablessee knife' halluc={'knife'}
+  eval #894: generated='teddy bear' halluc={'bear'}
+  eval #904: generated='boat' halluc={'boat'}
+  eval #918: generated='teddy bear' halluc={'bear'}
+  eval #931: generated='bottlessee person' halluc={'person'}
+  eval #950: generated='bedssee teddy bear' halluc={'bear'}
+  eval #972: generated='beddilly cell phone' halluc={'cell phone'}
+  eval #978: generated='bird' halluc={'bird'}
+  eval #984: generated='hot dog' halluc={'dog'}
+  eval #985: generated='stop sign' halluc={'stop sign'}
+  eval #990: generated='dog' halluc={'dog'}
+  eval #1002: generated='car' halluc={'car'}
+  eval #1004: generated='bowlssee dining table' halluc={'dining table'}
+  eval #1005: generated='bowlssee dining tablessee knife' halluc={'knife'}
+  eval #1039: generated='car' halluc={'car'}
+  eval #1049: generated='backpack' halluc={'backpack'}
+  eval #1051: generated='car' halluc={'car'}
+  eval #1062: generated='bowlssee broccoli' halluc={'broccoli'}
+  eval #1063: generated='person' halluc={'person'}
+  eval #1068: generated='bottledilly keyboarddilly laptop' halluc={'laptop'}
+  eval #1101: generated='car' halluc={'car'}
+  eval #1110: generated='cup' halluc={'cup'}
+  eval #1119: generated='person' halluc={'person'}
+  eval #1133: generated='boat' halluc={'boat'}
+  eval #1169: generated='applessee carrot' halluc={'carrot'}
+  eval #1177: generated='chair' halluc={'chair'}
+  eval #1185: generated='bus' halluc={'bus'}
+  eval #1195: generated='cup' halluc={'cup'}
+  eval #1233: generated='bowl' halluc={'bowl'}
+  eval #1243: generated='busdilly handbag texture person' halluc={'handbag'}
+  eval #1247: generated='car' halluc={'car'}
+  eval #1273: generated='chairssee dining tablessee knife' halluc={'knife'}
+  eval #1288: generated='person' halluc={'person'}
+  eval #1290: generated='bench' halluc={'bench'}
+  eval #1300: generated='bowlssee cake' halluc={'cake'}
+  eval #1315: generated='person' halluc={'person'}
+  eval #1340: generated='carssee dog' halluc={'dog'}
+  eval #1345: generated='dining table' halluc={'dining table'}
+  eval #1346: generated='chair' halluc={'chair'}
+  eval #1354: generated='cell phonessee chairssee keyboardssee mouse' halluc={'mouse'}
+  eval #1359: generated='bottle' halluc={'bottle'}
+  eval #1370: generated='cell phone' halluc={'cell phone'}
+  eval #1377: generated='toilet' halluc={'toilet'}
+  eval #1383: generated='backpack luxury kite luxury person' halluc={'backpack'}
+  eval #1405: generated='microwave' halluc={'microwave'}
+  eval #1412: generated='apple' halluc={'apple'}
+  eval #1422: generated='bookdilly person' halluc={'person'}
+  eval #1457: generated='bed' halluc={'bed'}
+  eval #1474: generated='cow' halluc={'cow'}
+  eval #1490: generated='cup' halluc={'cup'}
+  eval #1497: generated='teddy bear' halluc={'bear'}
+  eval #1503: generated='bottledilly bowldilly ovendilly refrigerator' halluc={'refrigerator'}
+  eval #1506: generated='teddy bear' halluc={'bear'}
+  eval #1509: generated='bookssee potted plant' halluc={'potted plant'}
+  eval #1538: generated='dining table' halluc={'dining table'}
+  eval #1540: generated='person' halluc={'person'}
+  eval #1541: generated='catssee keyboardssee laptop' halluc={'laptop'}
+  eval #1550: generated='person' halluc={'person'}
+  eval #1551: generated='backpackssee handbag' halluc={'handbag'}
+  eval #1564: generated='chairssee couchssee potted plant' halluc={'potted plant'}
+  eval #1571: generated='bookssee chairssee chair' halluc={'chair'}
+  eval #1573: generated='cupssee fork' halluc={'fork'}
+  eval #1589: generated='bowlssee donut' halluc={'donut'}
+  eval #1590: generated='person' halluc={'person'}
+  eval #1593: generated='cupssee dining tablessee fork' halluc={'fork'}
+  eval #1594: generated='car' halluc={'car'}
+  eval #1635: generated='bird' halluc={'bird'}
+  eval #1644: generated='teddy bear' halluc={'bear'}
+  eval #1645: generated='cakessee dining table' halluc={'dining table'}
+  eval #1647: generated='car' halluc={'car'}
+  eval #1651: generated='bookdilly chairdilly keyboarddilly laptop' halluc={'laptop'}
+  eval #1669: generated='car' halluc={'car'}
+  eval #1711: generated='backpack' halluc={'backpack'}
+  eval #1714: generated='dining table' halluc={'dining table'}
+  eval #1717: generated='car' halluc={'car'}
+  eval #1733: generated='cat' halluc={'cat'}
+  eval #1745: generated='backpack luggage' halluc={'backpack'}
+  eval #1761: generated='benchdilly person' halluc={'person'}
+  eval #1771: generated='car' halluc={'car'}
+  eval #1776: generated='teddy bear' halluc={'bear'}
+  eval #1782: generated='car' halluc={'car'}
+  eval #1784: generated='potted plant' halluc={'potted plant'}
+  eval #1791: generated='car' halluc={'car'}
+  eval #1793: generated='teddy bear' halluc={'bear'}
+  eval #1812: generated='hot dog' halluc={'dog'}
+  eval #1825: generated='teddy bear' halluc={'bear'}
+  eval #1847: generated='person' halluc={'person'}
+  eval #1869: generated='chairssee ovenssee refrigerator' halluc={'refrigerator'}
+  eval #1888: generated='baseball bat gabled baseball glove' halluc={'baseball glove'}
+  eval #1890: generated='person' halluc={'person'}
+  eval #1894: generated='teddy bear' halluc={'bear'}
+  eval #1900: generated='sheep' halluc={'sheep'}
+  eval #1906: generated='chairssee dining tablessee microwave' halluc={'microwave'}
+  eval #1912: generated='beddilly bookssee handbag' halluc={'handbag'}
+  eval #1917: generated='chair luxury couch luxury remote' halluc={'chair'}
+  eval #1920: generated='person' halluc={'person'}
+  eval #1939: generated='bowlssee chairssee chairssee cupssee dining tablessee forkssee knife' halluc={'knife'}
+  eval #1946: generated='couchssee teddy bear' halluc={'bear'}
+  eval #1948: generated='bowlssee dining tablessee knifessee orange' halluc={'orange'}
+  eval #1950: generated='cupssee keyboardssee mouse' halluc={'mouse'}
+  eval #1986: generated='bear' halluc={'bear'}
+  eval #1999: generated='person' halluc={'person'}
+  eval #2012: generated='bottle' halluc={'bottle'}
+  eval #2025: generated='busdilly handbag' halluc={'handbag'}
+  eval #2027: generated='bookdilly chairssee potted plant' halluc={'potted plant'}
+  eval #2028: generated='car' halluc={'car'}
+  eval #2033: generated='bird' halluc={'bird'}
+  eval #2047: generated='bowldilly dining table' halluc={'dining table'}
+  eval #2050: generated='bird' halluc={'bird'}
+  eval #2052: generated='bananassee bowlssee dining table' halluc={'dining table'}
+  eval #2056: generated='bottlessee teddy bear' halluc={'bear'}
+  eval #2060: generated='bowldilly broccoli' halluc={'broccoli'}
+  eval #2081: generated='sheep' halluc={'sheep'}
+  eval #2089: generated='bowl' halluc={'bowl'}
+  eval #2095: generated='bowlssee carrotssee carrotssee chairssee dining tablessee forkssee knife' halluc={'knife'}
+  eval #2103: generated='bowlssee carrot' halluc={'carrot'}
+  eval #2116: generated='person' halluc={'person'}
+  eval #2118: generated='bowlssee orange' halluc={'orange'}
+  eval #2122: generated='catssee keyboardssee mouse' halluc={'mouse'}
+  eval #2134: generated='horse' halluc={'horse'}
+  eval #2146: generated='bowl' halluc={'bowl'}
+  eval #2148: generated='chairssee teddy bear' halluc={'bear'}
+  eval #2179: generated='bed luxury teddy bear' halluc={'bed', 'bear'}
+  eval #2187: generated='baseball batdilly baseball glove' halluc={'baseball glove'}
+  eval #2202: generated='person' halluc={'person'}
+  eval #2204: generated='cupssee dining tablessee knife' halluc={'knife'}
+  eval #2230: generated='car' halluc={'car'}
+  eval #2231: generated='bowlssee dining table' halluc={'dining table'}
+  eval #2254: generated='bowl' halluc={'bowl'}
+  eval #2257: generated='bookssee teddy bear' halluc={'bear', 'teddy bear'}
+  eval #2275: generated='backpack' halluc={'backpack'}
+  eval #2280: generated='microwave' halluc={'microwave'}
+  eval #2282: generated='backpack person' halluc={'backpack'}
+  eval #2356: generated='person' halluc={'person'}
+  eval #2365: generated='bicycle' halluc={'bicycle'}
+  eval #2366: generated='bus' halluc={'bus'}
+  eval #2368: generated='teddy bear' halluc={'bear'}
+  eval #2414: generated='cupssee hot dog' halluc={'dog'}
+  eval #2423: generated='microwave' halluc={'microwave'}
+  eval #2424: generated='bird' halluc={'bird'}
+  eval #2434: generated='bowl' halluc={'bowl'}
+  eval #2439: generated='backpackssee handbag' halluc={'handbag'}
+  eval #2461: generated='boat' halluc={'boat'}
+  eval #2463: generated='backpackssee giraffe' halluc={'giraffe'}
+  eval #2507: generated='benchssee frisbee' halluc={'frisbee'}
+  eval #2527: generated='chairssee dining tablessee person' halluc={'person'}
+  eval #2529: generated='bird' halluc={'bird'}
+  eval #2535: generated='benchdilly dog luxury person' halluc={'dog'}
+  eval #2554: generated='bookssee catssee person' halluc={'person'}
+  eval #2570: generated='bowl' halluc={'bowl'}
+  eval #2583: generated='person' halluc={'person'}
+  eval #2615: generated='backpackoise handbag' halluc={'handbag'}
+  eval #2618: generated='person' halluc={'person'}
+  eval #2622: generated='bowl' halluc={'bowl'}
+  eval #2626: generated='chairssee cupssee dining tablessee laptopssee mouse' halluc={'mouse'}
+  eval #2633: generated='bowl luxury oven' halluc={'bowl'}
+  eval #2650: generated='bottlessee microwave' halluc={'microwave'}
+  eval #2662: generated='bowlssee cake' halluc={'cake'}
+  eval #2664: generated='person' halluc={'person'}
+  eval #2678: generated='hot dog' halluc={'dog'}
+  eval #2706: generated='car' halluc={'car'}
+  eval #2709: generated='toilet' halluc={'toilet'}
+  eval #2741: generated='dining tablessee hot dog' halluc={'dog'}
+  eval #2754: generated='cupssee hot dog' halluc={'dog'}
+  eval #2758: generated='bench luxury teddy bear' halluc={'bear'}
+  eval #2762: generated='applessee sandwich' halluc={'sandwich'}
+  eval #2763: generated='car' halluc={'car'}
+  eval #2782: generated='bowl' halluc={'bowl'}
+  eval #2786: generated='teddy bear' halluc={'bear'}
+  eval #2807: generated='teddy bear' halluc={'bear'}
+  eval #2808: generated='carrot' halluc={'carrot'}
+  eval #2814: generated='bench' halluc={'bench'}
+  eval #2864: generated='teddy bear' halluc={'bear'}
+  eval #2873: generated='bowlssee chairssee chairssee dining tablessee forkssee knife' halluc={'knife'}
+  eval #2879: generated='car' halluc={'car'}
+  eval #2889: generated='bus luxury car' halluc={'car'}
+  eval #2900: generated='car' halluc={'car'}
+  eval #2921: generated='personssee tie' halluc={'tie'}
+  eval #2937: generated='traffic light' halluc={'traffic light'}
+  eval #2957: generated='dining tablessee fork' halluc={'fork'}
+  eval #2958: generated='backpack softness car softness handbag softness person' halluc={'handbag'}
+  eval #2967: generated='backpack person' halluc={'backpack'}
+  eval #2969: generated='apple' halluc={'apple'}
+  eval #2973: generated='chair' halluc={'chair'}
+  eval #2986: generated='applessee teddy bear' halluc={'bear'}
+  eval #2991: generated='chair' halluc={'chair'}
+  eval #2992: generated='bus' halluc={'bus'}
+  eval #3000: generated='bird luxury zebra' halluc={'bird'}
+  eval #3010: generated='dining table' halluc={'dining table'}
+  eval #3035: generated='teddy bear' halluc={'bear'}
+  eval #3036: generated='boat' halluc={'boat'}
+  eval #3049: generated='bookssee couchssee tv' halluc={'tv'}
+  eval #3050: generated='dining table' halluc={'dining table'}
+  eval #3104: generated='teddy bear' halluc={'bear'}
+  eval #3158: generated='bookssee bowlssee cakessee dining tablessee forkssee knife' halluc={'knife'}
+  eval #3176: generated='potted plant' halluc={'potted plant'}
+  eval #3183: generated='handbag' halluc={'handbag'}
+  eval #3186: generated='book' halluc={'book'}
+  eval #3187: generated='car judyssee person' halluc={'car'}
+  eval #3214: generated='bird' halluc={'bird'}
+  eval #3235: generated='bed' halluc={'bed'}
+  eval #3239: generated='bench' halluc={'bench'}
+  eval #3241: generated='horse' halluc={'horse'}
+  eval #3245: generated='teddy bear' halluc={'bear'}
+  eval #3267: generated='person' halluc={'person'}
+  eval #3277: generated='chair' halluc={'chair'}
+  eval #3286: generated='kite' halluc={'kite'}
+  eval #3288: generated='chairssee teddy bear' halluc={'bear'}
+  eval #3307: generated='sink' halluc={'sink'}
+  eval #3310: generated='car' halluc={'car'}
+  eval #3314: generated='bowl' halluc={'bowl'}
+  eval #3320: generated='bookssee keyboardssee laptopssee mouse' halluc={'mouse'}
+  eval #3341: generated='bottle' halluc={'bottle'}
+  eval #3360: generated='donut' halluc={'donut'}
+  eval #3368: generated='bowl' halluc={'bowl'}
+  eval #3410: generated='chair' halluc={'chair'}
+  eval #3415: generated='hot dog' halluc={'dog'}
+  eval #3421: generated='bookssee hot dog' halluc={'dog'}
+  eval #3428: generated='bird' halluc={'bird'}
+  eval #3444: generated='dining table' halluc={'dining table'}
+  eval #3459: generated='bowlssee chairssee chairssee cupssee dining tablessee forkssee knife' halluc={'knife'}
+  eval #3461: generated='personssee potted plant' halluc={'potted plant'}
+  eval #3469: generated='book' halluc={'book'}
+  eval #3470: generated='bottlessee dining tablessee knifessee orange' halluc={'orange'}
+  eval #3481: generated='potted plant' halluc={'potted plant'}
+  eval #3499: generated='teddy bear' halluc={'bear'}
+  eval #3506: generated='bird' halluc={'bird'}
+  eval #3515: generated='bowlssee dining tablessee knife' halluc={'knife'}
+  eval #3517: generated='benchdilly bottlessee teddy bear' halluc={'bear'}
+  eval #3526: generated='bed' halluc={'bed'}
+  eval #3541: generated='car' halluc={'car'}
+  eval #3549: generated='chairdilly dining tablessee vase' halluc={'vase'}
+  eval #3587: generated='sheep' halluc={'sheep'}
+  eval #3618: generated='person' halluc={'person'}
+  eval #3641: generated='bottlessee oven' halluc={'oven'}
+  eval #3664: generated='chairssee teddy bear' halluc={'bear'}
+  eval #3675: generated='laptop' halluc={'laptop'}
+  eval #3690: generated='person' halluc={'person'}
+  eval #3691: generated='bottlessee orange' halluc={'orange'}
+  eval #3715: generated='teddy bear' halluc={'bear'}
+  eval #3722: generated='bowlssee chairssee chairssee chairssee cupssee dining tablessee knife' halluc={'knife'}
+  eval #3734: generated='dining tablessee forkssee knife' halluc={'knife'}
+  eval #3756: generated='chairssee chairssee dining tablessee personssee potted plant' halluc={'potted plant'}
+  eval #3787: generated='person' halluc={'person'}
+  eval #3806: generated='teddy bear' halluc={'bear'}
+  eval #3826: generated='car' halluc={'car'}
+  eval #3853: generated='dining table' halluc={'dining table'}
+  eval #3874: generated='cell phone' halluc={'cell phone'}
+  eval #3898: generated='toilet' halluc={'toilet'}
+  eval #3934: generated='keyboard' halluc={'keyboard'}
+  eval #3937: generated='car' halluc={'car'}
+  eval #3942: generated='dog' halluc={'dog'}
+  eval #3946: generated='bottledilly hot dog' halluc={'dog'}
+  eval #3954: generated='cake rectory dining table rectory person' halluc={'dining table'}
+  eval #3970: generated='car' halluc={'car'}
+  eval #3990: generated='oven' halluc={'oven'}
+  eval #4001: generated='broccoli' halluc={'broccoli'}
+  eval #4016: generated='bottledilly cakedilly dining tabledilly knife' halluc={'knife'}
+  eval #4036: generated='backpack person' halluc={'backpack'}
+  eval #4062: generated='teddy bear' halluc={'bear'}
+  eval #4081: generated='teddy bear' halluc={'bear'}
+  eval #4100: generated='laptopssee laptopssee mouse' halluc={'mouse'}
+  eval #4128: generated='bottlessee bowlssee dining tablessee oven' halluc={'oven'}
+  eval #4147: generated='person' halluc={'person'}
+  eval #4212: generated='bookdilly person' halluc={'person'}
+  eval #4214: generated='cow' halluc={'cow'}
+  eval #4221: generated='backpackssee catssee handbag' halluc={'handbag'}
+  eval #4225: generated='chairssee keyboarddilly laptop' halluc={'laptop'}
+  eval #4235: generated='person' halluc={'person'}
+  eval #4237: generated='broccoli' halluc={'broccoli'}
+  eval #4242: generated='catssee chairssee dining table' halluc={'dining table'}
+  eval #4244: generated='car' halluc={'car'}
+  eval #4292: generated='bicycle' halluc={'bicycle'}
+  eval #4302: generated='oven' halluc={'oven'}
+  eval #4303: generated='cupssee donut' halluc={'donut'}
+  eval #4326: generated='cup' halluc={'cup'}
+  eval #4339: generated='keyboarddilly mousedilly remote' halluc={'remote'}
+  eval #4340: generated='carssee cow' halluc={'cow'}
+  eval #4346: generated='bicycledilly fire hydrant' halluc={'fire hydrant'}
+  eval #4356: generated='car' halluc={'car'}
+  eval #4361: generated='book texture texturessee person' halluc={'person'}
+  eval #4365: generated='frisbee' halluc={'frisbee'}
+  eval #4376: generated='potted plant' halluc={'potted plant'}
+  eval #4418: generated='car' halluc={'car'}
+  eval #4435: generated='chairssee ovenssee potted plant' halluc={'potted plant'}
+  eval #4441: generated='bottledilly microwavessee oven' halluc={'oven'}
+  eval #4445: generated='boat' halluc={'boat'}
+  eval #4464: generated='dining table' halluc={'dining table'}
+  eval #4466: generated='teddy bear' halluc={'bear'}
+  eval #4477: generated='car' halluc={'car'}
+  eval #4486: generated='chairssee microwavessee ovenssee oven' halluc={'oven'}
+  eval #4493: generated='cup' halluc={'cup'}
+  eval #4507: generated='bottlessee dining tablessee knife' halluc={'knife'}
+  eval #4510: generated='bowlssee carrotssee dining tablessee knife' halluc={'knife'}
+  eval #4512: generated='boat' halluc={'boat'}
+  eval #4521: generated='bowlssee dining tablessee knife' halluc={'knife'}
+  eval #4529: generated='potted plant' halluc={'potted plant'}
+  eval #4548: generated='backpack' halluc={'backpack'}
+  eval #4553: generated='bed' halluc={'bed'}
+  eval #4560: generated='carrot' halluc={'carrot'}
+  eval #4564: generated='bed luxury teddy bear' halluc={'bed', 'bear'}
+  eval #4570: generated='carrot' halluc={'carrot'}
+  eval #4579: generated='bowl' halluc={'bowl'}
+  eval #4588: generated='teddy bear' halluc={'bear'}
+  eval #4594: generated='cake' halluc={'cake'}
+  eval #4598: generated='person' halluc={'person'}
+  eval #4610: generated='toilet' halluc={'toilet'}
+  eval #4622: generated='chairssee couchssee dining tablessee tv' halluc={'tv'}
+  eval #4626: generated='car' halluc={'car'}
+  eval #4647: generated='apple' halluc={'apple'}
+  eval #4671: generated='bear' halluc={'bear'}
+  eval #4677: generated='car softness person softness umbrella' halluc={'car'}
+  eval #4678: generated='car' halluc={'car'}
+  eval #4682: generated='dining table' halluc={'dining table'}
+  eval #4687: generated='cup' halluc={'cup'}
+  eval #4701: generated='bowldilly oven' halluc={'oven'}
+  eval #4711: generated='beddilly laptopssee mouse' halluc={'mouse'}
+  eval #4722: generated='bedssee cat' halluc={'cat'}
+  eval #4729: generated='bookssee potted plant' halluc={'potted plant'}
+  eval #4732: generated='chairssee keyboardssee laptop' halluc={'laptop'}
+  eval #4750: generated='bottlessee carrotssee cup' halluc={'cup'}
+  eval #4794: generated='fire hydrant' halluc={'fire hydrant'}
+  eval #4795: generated='teddy bear' halluc={'bear'}
+  eval #4801: generated='bookssee couchssee laptop' halluc={'laptop'}
+  eval #4817: generated='cat' halluc={'cat'}
+  eval #4830: generated='bookssee teddy bear' halluc={'bear'}
+  eval #4843: generated='chairdilly keyboarddilly mousedilly potted plant' halluc={'potted plant'}
+  eval #4846: generated='bottle' halluc={'bottle'}
+  eval #4851: generated='teddy bear' halluc={'bear'}
+  eval #4855: generated='backpack softness person' halluc={'backpack'}
+  eval #4860: generated='bookdilly cell phonedilly cup' halluc={'cup'}
+  eval #4876: generated='person' halluc={'person'}
+  eval #4886: generated='car' halluc={'car'}
+  eval #4894: generated='personssee potted plant' halluc={'potted plant'}
+  eval #4926: generated='person' halluc={'person'}
+  eval #4939: generated='chair luxury person' halluc={'chair'}
+  eval #4946: generated='hot dog' halluc={'dog'}
+
+Full summary updated: results/summary.txt
+Done.

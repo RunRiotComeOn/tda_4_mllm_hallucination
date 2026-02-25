@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH --job-name=qwen3vl_resume
+#SBATCH --account=bgek-delta-gpu
+#SBATCH --partition=gpuA100x4
+#SBATCH --gres=gpu:nvidia_a100:1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=64G
+#SBATCH --time=12:00:00
+#SBATCH --output=qwen3vl_resume_%j.out
+#SBATCH --error=qwen3vl_resume_%j.err
+
+cd /u/yhuang48/if_4_icl/tda_4_mllm_hallucination
+
+# No DEBUG env vars = full COCO
+python qwen3vl_resume_tracin.py
